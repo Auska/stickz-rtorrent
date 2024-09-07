@@ -112,6 +112,10 @@ ConnectionList::insert(PeerInfo* peerInfo, const SocketFd& fd, Bitfield* bitfiel
   m_download->info()->change_flags(DownloadInfo::flag_accepting_new_peers, size() < m_maxSize);
   rak::slot_list_call(m_signalConnected, peerConnection);
 
+  if (size() == 1) {
+    m_download->receive_first_peer_connected();
+  }
+
   return peerConnection;
 }
 
@@ -147,6 +151,11 @@ ConnectionList::erase(iterator pos, int flags) {
   // Delete after the signal to ensure the address of 'v' doesn't get
   // allocated for a different PCB in the signal.
   delete peerConnection;
+
+  if (size() == 0) {
+    m_download->receive_last_peer_disconnected();
+  }
+
   return pos;
 }
 

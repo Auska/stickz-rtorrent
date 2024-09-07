@@ -75,6 +75,8 @@ DownloadWrapper::DownloadWrapper() :
   m_connectionType(0) {
 
   m_main->delay_download_done().slot()       = std::bind(&download_data::call_download_done, data());
+  m_main->delay_download_active().slot()     = std::bind(&download_data::call_download_active, data());
+  m_main->delay_download_inactive().slot()   = std::bind(&download_data::call_download_inactive, data());
   m_main->delay_partially_done().slot()      = std::bind(&download_data::call_partially_done, data());
   m_main->delay_partially_restarted().slot() = std::bind(&download_data::call_partially_restarted, data());
 
@@ -146,6 +148,8 @@ DownloadWrapper::close() {
 
   // Should this perhaps be in stop?
   priority_queue_erase(&taskScheduler, &m_main->delay_download_done());
+  priority_queue_erase(&taskScheduler, &m_main->delay_download_active());
+  priority_queue_erase(&taskScheduler, &m_main->delay_download_inactive());
   priority_queue_erase(&taskScheduler, &m_main->delay_partially_done());
   priority_queue_erase(&taskScheduler, &m_main->delay_partially_restarted());
 }

@@ -106,6 +106,8 @@ protected:
   void                   set_wanted_chunks(uint32_t n) { m_wanted_chunks = n; }
 
   void                   call_download_done()          { if (m_slot_download_done) m_slot_download_done(); }
+  void                   call_download_active()        { if (m_slot_download_active) m_slot_download_active(); }
+  void                   call_download_inactive()      { if (m_slot_download_inactive) m_slot_download_inactive(); }
   void                   call_partially_done()         { if (m_slot_partially_done) m_slot_partially_done(); }
   void                   call_partially_restarted()    { if (m_slot_partially_restarted) m_slot_partially_restarted(); }
   void                   call_chunk_done(ChunkListNode* chunk_ptr) {if(m_slot_chunk_done) m_slot_chunk_done(chunk_ptr);}
