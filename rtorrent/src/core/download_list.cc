@@ -184,6 +184,8 @@ DownloadList::insert(Download* download) {
   try {
     (*itr)->data()->slot_initial_hash()        = std::bind(&DownloadList::hash_done, this, download);
     (*itr)->data()->slot_download_done()       = std::bind(&DownloadList::received_finished, this, download);
+    (*itr)->data()->slot_download_active()     = std::bind(&DownloadList::received_active, this, download);
+    (*itr)->data()->slot_download_inactive()   = std::bind(&DownloadList::received_inactive, this, download);
 
     // This needs to be separated into two different calls to ensure
     // the download remains in the view.
@@ -281,6 +283,10 @@ DownloadList::close_directly(Download* download) {
   lt_log_print_info(torrent::LOG_TORRENT_INFO, download->info(), "download_list", "Closing download directly.");
 
   if (download->download()->info()->is_active()) {
+    if (!download->connection_list()->empty()) {
+      DL_TRIGGER_EVENT(download, "event.download.inactive");
+    }
+
     download->download()->stop(torrent::Download::stop_skip_tracker);
 
     if (torrent::resume_check_target_files(*download->download(), download->download()->bencode()->get_key("libtorrent_resume")))
@@ -454,6 +460,10 @@ DownloadList::pause(Download* download, int flags) {
 
     if (!download->download()->info()->is_active())
       return;
+
+    if (!download->connection_list()->empty()) {
+      DL_TRIGGER_EVENT(download, "event.download.inactive");
+    }
 
     download->download()->stop(flags);
     torrent::resume_save_progress(*download->download(), download->download()->bencode()->get_key("libtorrent_resume"));
@@ -692,6 +702,24 @@ DownloadList::confirm_finished(Download* download) {
            torrent::Download::start_no_create |
            torrent::Download::start_skip_tracker |
            torrent::Download::start_keep_baseline);
+}
+
+void
+DownloadList::received_active(Download* download) {
+  check_contains(download);
+
+  lt_log_print_info(torrent::LOG_TORRENT_DEBUG, download->info(), "download_list", "Received active.");
+
+  DL_TRIGGER_EVENT(download, "event.download.active");
+}
+
+void
+DownloadList::received_inactive(Download* download) {
+  check_contains(download);
+
+  lt_log_print_info(torrent::LOG_TORRENT_DEBUG, download->info(), "download_list", "Received inactive.");
+
+  DL_TRIGGER_EVENT(download, "event.download.inactive");
 }
 
 void
