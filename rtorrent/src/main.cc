@@ -81,6 +81,8 @@
 
 #include "thread_worker.h"
 
+const char* compile_date_time = __DATE__ " " __TIME__;
+
 void handle_sigbus(int signum, siginfo_t* sa, void* ptr);
 void do_panic(int signum);
 void print_help();
@@ -647,6 +649,8 @@ do_panic(int signum) {
 void
 print_help() {
   std::cout << "rtorrent stickz BitTorrent client version " STICKZ_VERSION "." << std::endl;
+  std::cout << std::endl;
+  std::cout << "Compile: " << compile_date_time << std::endl;
   std::cout << std::endl;
   std::cout << "All value pairs (f.ex rate and queue size) will be in the UP/DOWN" << std::endl;
   std::cout << "order. Use the up/down/left/right arrow keys to move between screens." << std::endl;
