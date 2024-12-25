@@ -1,7 +1,7 @@
 AC_INIT(rtorrent, 0.9.8, sundell.software@gmail.com)
 
 AC_DEFINE(API_VERSION, 10, api version)
-AC_DEFINE(STICKZ_VERSION, "0.9.8-v6.3", rtorrent stickz version)
+AC_DEFINE(STICKZ_VERSION, "0.9.8-v7.0", rtorrent stickz version)
 
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS(config.h)
@@ -46,6 +46,12 @@ PKG_CHECK_MODULES([DEPENDENCIES], [libtorrent >= 0.13.8],, [no_libtorrent="yes"]
 AC_LANG_PUSH(C++)
 TORRENT_WITH_XMLRPC_C
 AC_LANG_POP(C++)
+
+TORRENT_WITH_TINYXML2
+
+if test ${with_xmlrpc_c+y} && test ${with_xmlrpc_tinyxml2+y}; then
+  AC_MSG_ERROR([--with-xmlrpc-c and --with-xmlrpc-tinyxml2 cannot be used together. Please choose only one])
+fi
 
 AC_DEFINE(HAVE_CONFIG_H, 1, true if config.h was included)
 AC_DEFINE(USER_AGENT, [std::string(PACKAGE "/" VERSION "/") + torrent::version()], Http user agent)
