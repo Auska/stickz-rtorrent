@@ -112,8 +112,8 @@ protected:
 
   void                set_group(uint32_t v)                 { m_group = v; }
 
-  void                set_normal_interval(int v)            { m_normal_interval = std::min(std::max(600, v), 8 * 3600); }
-  void                set_min_interval(int v)               { m_min_interval = std::min(std::max(300, v), 4 * 3600); }
+  void                set_normal_interval(int v)            { m_normal_interval = std::min(20 * 60, v); }
+  void                set_min_interval(int v)               { m_min_interval = std::min(10 * 60, v); }
 
   int                 m_flags;
 
